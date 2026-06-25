@@ -9,6 +9,7 @@ on:
 jobs:
   backend_tests:
     runs-on: ubuntu-latest
+
     services:
       postgres:
         image: postgres:16-alpine
@@ -23,6 +24,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -32,15 +34,17 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
+      - name: Install backend dependencies
         working-directory: backend
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install flake8
+          pip install flake8 flake8-isort isort
 
-      - name: Check PEP8
-        run: flake8 .
+      - name: Check backend code style
+        working-directory: backend
+        run: |
+          python -m flake8 . --exclude=migrations,__pycache__
 
       - name: Check Django project
         working-directory: backend
@@ -48,6 +52,7 @@ jobs:
           SECRET_KEY: github-actions-secret-key
           DEBUG: 'False'
           ALLOWED_HOSTS: localhost,127.0.0.1,testserver
+          CSRF_TRUSTED_ORIGINS: http://localhost,http://127.0.0.1
           DB_ENGINE: django.db.backends.postgresql
           POSTGRES_DB: foodgram_test
           POSTGRES_USER: foodgram_user
@@ -55,6 +60,7 @@ jobs:
           DB_HOST: localhost
           DB_PORT: 5432
         run: |
+          python manage.py makemigrations --check --dry-run
           python manage.py migrate --noinput
           python manage.py load_ingredients
           python manage.py load_tags
@@ -63,6 +69,7 @@ jobs:
   build_and_push:
     needs: backend_tests
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -86,6 +93,7 @@ jobs:
   deploy:
     needs: build_and_push
     runs-on: ubuntu-latest
+
     steps:
       - name: Deploy on server
         uses: appleboy/ssh-action@v1.2.0
@@ -94,7 +102,9 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd ~/foodgram/infra
+            cd ~/foodgram
+            git pull
+            cd infra
             sudo docker compose pull backend
             sudo docker compose up -d --build
             sudo docker system prune -af
