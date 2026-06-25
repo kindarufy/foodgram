@@ -4,11 +4,11 @@ Foodgram - SPA-приложение с REST API, где пользователи
 
 ## Адрес проекта
 
-Проект: http://kirta-security.ru/
+Проект: http://138.16.153.103/
 
-API-документация: http://kirta-security.ru/api/docs/
+API-документация: http://138.16.153.103/api/docs/
 
-Админка: http://kirta-security.ru/admin/
+Админка: http://138.16.153.103/admin/
 
 Демо-администратор:
 - login: admin@foodgram.local
