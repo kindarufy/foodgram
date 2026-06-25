@@ -2,6 +2,18 @@
 
 Foodgram - SPA-приложение с REST API, где пользователи публикуют рецепты, подписываются на авторов, добавляют рецепты в избранное и формируют список покупок.
 
+## Адрес проекта
+
+Проект: http://kirta-security.ru/
+
+API-документация: http://kirta-security.ru/api/docs/
+
+Админка: http://kirta-security.ru/admin/
+
+Демо-администратор:
+- login: admin@foodgram.local
+- password: PaSsWord
+
 ## Что реализовано
 
 - Регистрация, вход, выход и смена пароля через токены.
